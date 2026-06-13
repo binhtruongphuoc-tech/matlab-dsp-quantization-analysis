@@ -7,7 +7,7 @@ A comprehensive Digital Signal Processing (DSP) project simulating the effects o
 
 ---
 
-## 🚀 Project Overview
+##  Project Overview
 
 In digital systems, continuous analog signals must be digitized (quantized) into discrete levels, inherently introducing quantization error ($e[n] = x[n] - x_q[n]$). This project explores this phenomenon through three core MATLAB simulations to verify standard DSP theorems.
 
