@@ -3,48 +3,66 @@ MATLAB simulations analyzing ADC quantization noise, SQNR, and FFT spectrum in D
 
 # DSP Quantization & Noise Analysis via MATLAB
 
-A comprehensive Digital Signal Processing (DSP) project simulating the effects of quantization and quantization noise using MATLAB. This project visually and mathematically investigates how bit-depth resolution in Analog-to-Digital Conversion (ADC) impacts signal fidelity, Mean Squared Error (MSE), and the frequency-domain noise floor.
+This repository contains a comprehensive Digital Signal Processing (DSP) research project that empirically simulates the effects of quantization and quantization noise using MATLAB. The primary objective is to visually and mathematically validate standard DSP theorems regarding Analog-to-Digital Conversion (ADC) across both the time and frequency domains.
 
 ---
 
-##  Project Overview
+## Theoretical Overview
 
-In digital systems, continuous analog signals must be digitized (quantized) into discrete levels, inherently introducing quantization error ($e[n] = x[n] - x_q[n]$). This project explores this phenomenon through three core MATLAB simulations to verify standard DSP theorems.
+In any digital system, continuous analog signals must be digitized into a finite number of discrete levels. This mapping process inevitably introduces a rounding error known as **Quantization Noise** ($e[n] = x[n] - x_q[n]$). 
+* **Quantization Step Size ($\Delta$):** Determined by the formula $\Delta = \frac{2A}{2^B}$, where $A$ is the peak amplitude and $B$ is the bit depth.
+* **Theoretical SQNR:** The Signal-to-Quantization-Noise Ratio for a full-scale sine wave is mathematically bounded by the formula: $SQNR \approx 6.02B + 1.76 \text{ (dB)}$.
 
-### 1. Sine Wave: SQNR vs. Bit Depth
-Simulated a uniform mid-tread quantizer on a standard sine wave to evaluate the Signal-to-Quantization-Noise Ratio (SQNR). 
-* **Result:** Successfully verified the theoretical DSP formula: $SQNR \approx 6.02B + 1.76 \text{ (dB)}$, demonstrating that each additional bit yields roughly a 6 dB improvement in signal-to-noise ratio.
-
-### 2. Ramp Signal: Staircase Distortion & MSE
-Applied quantization to a linear ramp signal to explicitly visualize "staircase distortion" at lower bit depths (e.g., 4-bit).
-* **Result:** Computed the Mean Squared Error (MSE) to show its exponential decay as bit resolution increases from 4-bit to 16-bit, confirming the variance model $\sigma_e^2 = \frac{\Delta^2}{12}$.
-
-### 3. FFT Analysis of Quantization Noise
-Performed Fast Fourier Transform (FFT) to analyze the frequency spectrum of the quantization error across 4-bit, 8-bit, and 16-bit systems.
-* **Result:** Demonstrated that low bit-depths generate distinct spurious harmonic tones, whereas high bit-depths (16-bit) smooth out the error into a uniform, flat "white noise" floor dropping below -150 dB.
+This project verifies these principles through three extensive MATLAB simulations:
 
 ---
 
-##  Simulation Gallery
+## Part 1: SQNR vs. Bit Depth Analysis (Sine Wave)
+This simulation evaluates the linear relationship between bit resolution and signal fidelity. The input is a standard normalized sine wave (1 kHz frequency, sampled at 44.1 kHz).
 
-*(Add your MATLAB exported plots here)*
+**Key Findings:**
+* **2-bit Resolution:** The signal is heavily distorted, forming crude square-like waves with massive quantization error.
+* **4-bit Resolution:** The waveform begins to smooth out, but discrete steps are still highly visible.
+* **SQNR Validation:** The plotted SQNR curve tracks the theoretical $6.02B + 1.76$ equation with absolute precision, practically demonstrating that every additional bit of resolution reduces the quantization noise power by approximately 6 dB.
 
-| SQNR vs. Bit Resolution | Ramp Staircase Distortion | FFT Noise Spectrum |
+### 📸 Simulation 1: Time-Domain & SQNR
+| SQNR vs. Bit Depth | 2-Bit Quantization & Error | 4-Bit Quantization & Error |
 | :---: | :---: | :---: |
-| ![SQNR Plot](images/sqnr_vs_bit.png) | ![Ramp Distortion](images/ramp_distortion.png) | ![FFT Spectrum](images/fft_spectrum.png) |
+| ![SQNR Plot](images/sqnr_sin.png) | ![2-Bit Wave](images/sin_2bit.png) | ![4-Bit Wave](images/sin_4bit.png) |
 
 ---
 
-## My Contributions
+## 📉 Part 2: Staircase Distortion & Mean Squared Error (MSE)
+To explicitly visualize the quantization levels, we applied a uniform quantizer to a linear Ramp signal ranging from -1 to +1. 
 
-As a core member of this DSP research project, my specific responsibilities focused on the mathematical and theoretical foundation of the system:
+**Key Findings:**
+* **4-bit Quantization:** The ramp is aggressively discretized into precisely 16 distinct voltage levels, producing a harsh "staircase" effect.
+* **8-bit Quantization:** With 256 levels, the staircase steps become microscopic, significantly reducing the Mean Squared Error (MSE).
+* **16-bit Quantization:** The quantized signal perfectly overlaps the original analog ramp. The calculated MSE aligns perfectly with the uniform distribution variance model $\sigma_e^2 = \frac{\Delta^2}{12}$.
 
-* **Theoretical Modeling:** Researched and established the mathematical formulas governing analog-to-digital quantization, modeling the quantization step ($\Delta$), Mean Squared Error (MSE), and the theoretical limits of SQNR.
-* **Algorithm Analysis:** Analyzed the behavior of quantization error in both the time domain (staircase effect) and the frequency domain (white noise distribution vs. harmonic distortion).
-* **Technical Documentation:** Authored and formatted the comprehensive academic engineering report, bridging the gap between theoretical DSP concepts and the empirical data generated by the MATLAB simulations.
+### 📸 Simulation 2: Ramp Signal Distortion
+| 4-Bit Ramp Distortion | 8-Bit Ramp Distortion | 16-Bit Ramp Distortion |
+| :---: | :---: | :---: |
+| ![Ramp 4-bit](images/ramp_4bit.png) | ![Ramp 8-bit](images/ramp_8bit.png) | ![Ramp 16-bit](images/ramp_16bit.png) |
 
 ---
 
-##  Tools & Technologies
+## 📻 Part 3: Frequency Domain Analysis (FFT Spectrum)
+To understand the nature of quantization noise, we utilized the Fast Fourier Transform (FFT) to transition from the time domain to the frequency domain. This simulation investigates whether quantization error acts as harmonic distortion or true white noise.
+
+**Key Findings:**
+* **4-bit Spectrum:** The noise floor is severely elevated (fluctuating between -40 dB and -60 dB). The error energy is concentrated in distinct, spurious harmonic spikes. The measured SNR is $\approx 26.23$ dB (matching the theoretical $25.84$ dB).
+* **8-bit Spectrum:** The noise floor drops drastically by roughly 40-50 dB, settling around -90 to -110 dB. The measured SNR jumps to $\approx 49.96$ dB.
+* **16-bit Spectrum:** The noise floor plummets below -150 dB and becomes perfectly flat. This proves that at high bit depths, quantization error loses its correlation with the input signal and behaves identically to an ideal, uniformly distributed white noise.
+
+### 📸 Simulation 3: FFT Noise Floor
+| 4-Bit FFT Spectrum | 8-Bit FFT Spectrum | 16-Bit FFT Spectrum |
+| :---: | :---: | :---: |
+| ![FFT 4-bit](images/fft_4bit.png) | ![FFT 8-bit](images/fft_8bit.png) | ![FFT 16-bit](images/fft_16bit.png) |
+
+---
+
+
+## 🛠️ Tools & Concepts
 * **Environment:** MATLAB
-* **Key DSP Concepts:** Uniform Quantization, Fast Fourier Transform (FFT), Signal-to-Noise Ratio (SNR/SQNR), Signal Sampling, Noise Floor Analysis.
+* **Core DSP Concepts:** Uniform Quantization, Fast Fourier Transform (FFT), Signal-to-Quantization-Noise Ratio (SQNR), Mean Squared Error (MSE), Sampling Theory, Noise Floor Analysis.
