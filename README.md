@@ -1,7 +1,7 @@
 # matlab-dsp-quantization-analysis
 MATLAB simulations analyzing ADC quantization noise, SQNR, and FFT spectrum in Digital Signal Processing.
 
-# DSP Quantization & Noise Analysis via MATLAB 🌊📉
+# DSP Quantization & Noise Analysis via MATLAB
 
 A comprehensive Digital Signal Processing (DSP) project simulating the effects of quantization and quantization noise using MATLAB. This project visually and mathematically investigates how bit-depth resolution in Analog-to-Digital Conversion (ADC) impacts signal fidelity, Mean Squared Error (MSE), and the frequency-domain noise floor.
 
