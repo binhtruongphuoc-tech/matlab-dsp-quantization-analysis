@@ -12,7 +12,6 @@ This project explores the empirical effects of ADC quantization on signal integr
 ## Part 1: SQNR vs. Bit Depth Analysis (Sine Wave)
 I simulated a 1kHz sine wave sampled at 44.1kHz to observe how bit resolution impacts signal fidelity.
 * **Findings:** Validated the "6dB per bit" rule ($SQNR \approx 6.02B + 1.76$ dB). Every bit added consistently reduced the noise floor, confirming the linear relationship between bit depth and signal fidelity.
-* 
 ### Simulation 1: Time-Domain & SQNR
 | SQNR vs. Bit Depth | 2-Bit Quantization & Error | 4-Bit Quantization & Error |
 | :---: | :---: | :---: |
