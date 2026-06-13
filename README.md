@@ -25,14 +25,14 @@ This simulation evaluates the linear relationship between bit resolution and sig
 * **4-bit Resolution:** The waveform begins to smooth out, but discrete steps are still highly visible.
 * **SQNR Validation:** The plotted SQNR curve tracks the theoretical $6.02B + 1.76$ equation with absolute precision, practically demonstrating that every additional bit of resolution reduces the quantization noise power by approximately 6 dB.
 
-### 📸 Simulation 1: Time-Domain & SQNR
+### Simulation 1: Time-Domain & SQNR
 | SQNR vs. Bit Depth | 2-Bit Quantization & Error | 4-Bit Quantization & Error |
 | :---: | :---: | :---: |
 | ![SQNR Plot](images/sqnr_sin.png) | ![2-Bit Wave](images/sin_2bit.png) | ![4-Bit Wave](images/sin_4bit.png) |
 
 ---
 
-## 📉 Part 2: Staircase Distortion & Mean Squared Error (MSE)
+## Part 2: Staircase Distortion & Mean Squared Error (MSE)
 To explicitly visualize the quantization levels, we applied a uniform quantizer to a linear Ramp signal ranging from -1 to +1. 
 
 **Key Findings:**
@@ -40,14 +40,14 @@ To explicitly visualize the quantization levels, we applied a uniform quantizer 
 * **8-bit Quantization:** With 256 levels, the staircase steps become microscopic, significantly reducing the Mean Squared Error (MSE).
 * **16-bit Quantization:** The quantized signal perfectly overlaps the original analog ramp. The calculated MSE aligns perfectly with the uniform distribution variance model $\sigma_e^2 = \frac{\Delta^2}{12}$.
 
-### 📸 Simulation 2: Ramp Signal Distortion
+### Simulation 2: Ramp Signal Distortion
 | 4-Bit Ramp Distortion | 8-Bit Ramp Distortion | 16-Bit Ramp Distortion |
 | :---: | :---: | :---: |
 | ![Ramp 4-bit](images/ramp_4bit.png) | ![Ramp 8-bit](images/ramp_8bit.png) | ![Ramp 16-bit](images/ramp_16bit.png) |
 
 ---
 
-## 📻 Part 3: Frequency Domain Analysis (FFT Spectrum)
+## Part 3: Frequency Domain Analysis (FFT Spectrum)
 To understand the nature of quantization noise, we utilized the Fast Fourier Transform (FFT) to transition from the time domain to the frequency domain. This simulation investigates whether quantization error acts as harmonic distortion or true white noise.
 
 **Key Findings:**
@@ -55,7 +55,7 @@ To understand the nature of quantization noise, we utilized the Fast Fourier Tra
 * **8-bit Spectrum:** The noise floor drops drastically by roughly 40-50 dB, settling around -90 to -110 dB. The measured SNR jumps to $\approx 49.96$ dB.
 * **16-bit Spectrum:** The noise floor plummets below -150 dB and becomes perfectly flat. This proves that at high bit depths, quantization error loses its correlation with the input signal and behaves identically to an ideal, uniformly distributed white noise.
 
-### 📸 Simulation 3: FFT Noise Floor
+### Simulation 3: FFT Noise Floor
 | 4-Bit FFT Spectrum | 8-Bit FFT Spectrum | 16-Bit FFT Spectrum |
 | :---: | :---: | :---: |
 | ![FFT 4-bit](images/fft_4bit.png) | ![FFT 8-bit](images/fft_8bit.png) | ![FFT 16-bit](images/fft_16bit.png) |
@@ -63,6 +63,6 @@ To understand the nature of quantization noise, we utilized the Fast Fourier Tra
 ---
 
 
-## 🛠️ Tools & Concepts
+## Tools & Concepts
 * **Environment:** MATLAB
 * **Core DSP Concepts:** Uniform Quantization, Fast Fourier Transform (FFT), Signal-to-Quantization-Noise Ratio (SQNR), Mean Squared Error (MSE), Sampling Theory, Noise Floor Analysis.
