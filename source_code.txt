@@ -1,0 +1,192 @@
+%% MÔ PHỎNG 1 – SIN: SQNR vs BIT (đã chỉnh cho dễ quan sát)
+clear; clc; close all;
+
+%% 1. Tín hiệu sin chuẩn hóa
+fs  = 44100;          % Tần số lấy mẫu (Hz)
+f0  = 1000;           % Tần số sin (Hz)
+T   = 0.1;            % Thời lượng mô phỏng (s) - vẫn giữ dài cho SNR chính xác
+t   = 0:1/fs:T;
+A   = 1;
+
+x   = A * sin(2*pi*f0*t);
+Px  = mean(x.^2);
+
+%% 2. Dải bit để vẽ đường SQNR
+bits = 2:16;
+Nb   = numel(bits);
+
+SQNR_sim    = zeros(1,Nb);
+SQNR_theory = zeros(1,Nb);
+
+for k = 1:Nb
+    B = bits(k);
+    L     = 2^B;
+    Delta = 2*A / L;
+
+    % Lượng tử hóa mid-tread (round về mức gần nhất)
+    xq = Delta * round(x/Delta);
+
+    e  = x - xq;
+    Pe = mean(e.^2);
+
+    SQNR_sim(k)    = 10*log10(Px / Pe);
+    SQNR_theory(k) = 6.02*B + 1.76;
+end
+
+%% 3. Vẽ đường SQNR vs Bit
+figure('Color','w','Position',[250 150 700 450]);
+plot(bits, SQNR_sim, 'o-','LineWidth',2,'MarkerSize',7); hold on;
+plot(bits, SQNR_theory, 's--','LineWidth',2,'MarkerSize',7);
+grid on;
+title('SQNR theo số bit lượng tử hóa (sin chuẩn hóa)','FontSize',15,'FontWeight','bold');
+xlabel('Số bit B','FontSize',13);
+ylabel('SQNR (dB)','FontSize',13);
+legend('SQNR mô phỏng','SQNR lý thuyết 6.02B+1.76','Location','NorthWest','FontSize',11);
+set(gca,'FontSize',12);
+
+%% 4. HÌNH MINH HỌA WAVEFORM – CHỈ LẤY 1 CHU KỲ, BIT ÍT CHO DỄ THẤY
+bits_demo = [2 3 4];      % cố tình chọn bit nhỏ cho méo rõ
+Nd = numel(bits_demo);
+
+% Số mẫu trong 1 chu kỳ sin
+Nper = round(fs / f0);    % ≈ 44 mẫu
+n_show = 1:Nper;          % chỉ vẽ 1 chu kỳ đầu tiên
+t_show = t(n_show);
+
+figure('Color','w','Position',[200 100 750 650]);
+
+for i = 1:Nd
+    B = bits_demo(i);
+    L     = 2^B;
+    Delta = 2*A / L;
+
+    xq    = Delta * round(x/Delta);
+    e     = x - xq;       % sai số lượng tử
+
+    subplot(Nd,2,2*i-1);  % cột 1: dạng sóng
+    plot(t_show, x(n_show),'LineWidth',1.4); hold on;
+    stairs(t_show, xq(n_show),'LineWidth',1.4); % dùng stairs để thấy bậc
+    grid on;
+    title(sprintf('Lượng tử hóa %d-bit (1 chu kỳ)',B),'FontSize',13,'FontWeight','bold');
+    xlabel('Thời gian (s)','FontSize',11);
+    ylabel('Biên độ','FontSize',11);
+    legend('Sin gốc','Sin lượng tử','FontSize',9,'Location','SouthOutside');
+    ylim([-1.2 1.2]);
+    set(gca,'FontSize',11);
+
+    subplot(Nd,2,2*i);    % cột 2: sai số e[n]
+    stem(t_show, e(n_show),'filled','LineWidth',1); grid on;
+    title(sprintf('Sai số lượng tử e[n], %d-bit',B),'FontSize',13,'FontWeight','bold');
+    xlabel('Thời gian (s)','FontSize',11);
+    ylabel('e[n]','FontSize',11);
+    set(gca,'FontSize',11);
+end
+
+
+
+Ramp;:
+clc; clear; close all;
+N = 2000;
+x = linspace(-1, 1, N);     % Ramp từ -1 → 1
+Px = mean(x.^2);            % Công suất tín hiệu gốc
+%% THAM SỐ LƯỢNG TỬ 
+bits = [4 8 16];
+M = numel(bits);
+MSE = zeros(1, M);
+SQNR_sim = zeros(1, M);
+SQNR_theory = zeros(1, M);
+%% MÔ PHỎNG
+figure('Color','w','Position',[200 100 750 900]);
+for k = 1:M
+    b = bits(k);
+    L = 2^b;
+    Delta = 2 / L;  % Step size (range = 2)
+    % Mid-rise quantization
+    xq = Delta * floor(x/Delta + 0.5);
+    % MSE
+    MSE(k) = mean((x - xq).^2);
+    % SQNR mô phỏng
+    SQNR_sim(k) = 10*log10(Px / MSE(k));
+    % SQNR lý thuyết uniform quantizer
+    SQNR_theory(k) = 6.02*b + 1.76;   % dB
+    % ------ VẼ ĐỒ THỊ ------
+    subplot(3,1,k);
+    plot(x, 'LineWidth', 1.3); hold on;
+    plot(xq, 'LineWidth', 1.3);
+    grid on;
+    title(['Quantization ' num2str(b) '-bit'], 'FontSize', 14, 'FontWeight','bold');
+    xlabel('Sample index', 'FontSize', 12);
+    ylabel('Amplitude', 'FontSize', 12);
+    legend('Original ramp','Quantized','FontSize',11);
+    set(gca,'FontSize',12);
+end
+%% BẢNG KẾT QUẢ
+disp('Kết quả MSE và SQNR:');
+T = table(bits', MSE', SQNR_sim', SQNR_theory',...
+    'VariableNames', {'Bits','MSE','SQNR_sim_dB','SQNR_theory_dB'});
+disp(T);
+%% VẼ ĐỒ THỊ SQNR
+figure('Color','w','Position',[300 200 700 450]);
+plot(bits, SQNR_sim, 'o-','LineWidth',2,'MarkerSize',8); hold on;
+plot(bits, SQNR_theory, 's--','LineWidth',2,'MarkerSize',8);
+grid on;
+title('SQNR theo số bit lượng tử hóa','FontSize',16,'FontWeight','bold');
+xlabel('Số bit','FontSize',14);
+ylabel('SQNR (dB)','FontSize',14);
+legend('SQNR mô phỏng','SQNR lý thuyết','FontSize',12,'Location','NorthWest');
+set(gca,'FontSize',13);
+
+
+FFT:
+%% Quantization Noise Spectrum
+clear; close all; clc; clear length;
+
+if exist('graphics_toolkit','file')
+try, graphics_toolkit("qt"); end
+end
+
+fs = 44100;
+f0 = 1000;
+T = 0.1;
+t = 0:1/fs:T;
+A = 1;
+bits = [4 8 16];
+
+x = A * sin(2*pi*f0*t);
+db20 = @(y) 20*log10(max(y,1e-12));
+
+% Vòng lặp dùng numel thay cho length
+for ii = 1:numel(bits)
+N = bits(ii);
+Delta = 2*A / (2^N);
+xq = round(x/Delta)*Delta;
+e = x - xq;
+
+Nfft = 2^nextpow2(numel(x));
+f_axis = fs*(0:(Nfft/2))/Nfft;
+X = abs(fft(x,Nfft))/numel(x);
+E = abs(fft(e,Nfft))/numel(e);
+
+figure('Name',sprintf('Quantization Noise Spectrum - %d bits',N),...
+'NumberTitle','off','Color','w','Visible','on');
+
+subplot(2,1,1);
+plot(f_axis, db20(X(1:Nfft/2+1)),'LineWidth',1.2);
+title(sprintf('Spectrum of Signal (%d-bit quantization)',N));
+xlabel('Frequency (Hz)'); ylabel('Amplitude (dB)');
+xlim([0 5000]); ylim([-120 0]); grid on;
+
+subplot(2,1,2);
+plot(f_axis, db20(E(1:Nfft/2+1)),'LineWidth',1.2);
+title(sprintf('Quantization Noise Spectrum (%d bits)',N));
+xlabel('Frequency (Hz)'); ylabel('Amplitude (dB)');
+xlim([0 5000]); ylim([-120 0]); grid on;
+
+SNR_exp = 10*log10(mean(x.^2)/max(mean(e.^2),1e-18));
+fprintf('N=%2d, Δ=%.8f, SNR_exp=%.2f dB\n', N, Delta, SNR_exp);
+
+fname = sprintf('fig_noise_spectrum_%dbit.png',N);
+try, print(gcf,fname,'-dpng','-r200'); catch, saveas(gcf,fname); end
+drawnow; pause(0.5);
+end
+
